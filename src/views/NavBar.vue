@@ -21,9 +21,9 @@ const toggleDropdown = () => {
   <header class="navbar">
     <nav>
       <div class="nav-left">
-        <router-link :to="{ name: 'home' }" class="logo">Livraria</router-link>
-        <router-link :to="{ name: 'categorias' }">Categorias</router-link>
-        <router-link :to="{ name: 'livros' }">Livros</router-link>
+        <router-link :to="{ name: 'home' }" class="logo">Cardapio</router-link>
+        <router-link :to="{ name: 'categorias' }">Saiba mais </router-link>
+        <router-link :to="{ name: 'livros' }">Objetivos e beneficios </router-link>
       </div>
 
       <div class="nav-right" v-if="isLoggedIn">
@@ -49,6 +49,8 @@ const toggleDropdown = () => {
             <p><strong>{{ user.name }}</strong></p>
             <p class="email">{{ user.email }}</p> <!-- Adiciona classe email -->
             <router-link to="/logout" class="dropdown-item">Logout</router-link>
+         
+         
           </div>
         </div>
       </div>
@@ -59,6 +61,8 @@ const toggleDropdown = () => {
     </nav>
   </header>
 </template>
+
+
 
 <style scoped>
 /* Estilos gerais da barra de navegação */

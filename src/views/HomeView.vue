@@ -1,123 +1,179 @@
-<script setup>
-import { onMounted, ref } from 'vue';
-import { PassageUser } from '@passageidentity/passage-elements/passage-user';
-import { useAuthStore } from '@/stores/auth';
-
-const authStore = useAuthStore();
-const psg_auth_token = ref('');
-const copyMessageVisible = ref(false);
-
-const getUserInfo = async () => {
-  try {
-    const authToken = localStorage.getItem('psg_auth_token');
-    const passageUser = new PassageUser(authToken);
-    const user = await passageUser.userInfo(authToken);
-    psg_auth_token.value = authToken;
-    if (user) {
-      await authStore.setToken(authToken);
-    } else {
-      authStore.unsetToken();
-    }
-  } catch (error) {
-    authStore.unsetToken();
-  }
-};
-
-const copyToClipboard = () => {
-  navigator.clipboard.writeText(psg_auth_token.value).then(() => {
-    copyMessageVisible.value = true;
-    setTimeout(() => {
-      copyMessageVisible.value = false;
-    }, 2000);
-  }).catch(err => {
-    console.error('Erro ao copiar o token: ', err);
-  });
-};
-
-onMounted(() => {
-  getUserInfo();
-});
-</script>
-
 <template>
-  <div class="container">
-    <button @click="copyToClipboard">Copiar token de autenticação</button>
-    <p v-if="copyMessageVisible" class="copy-message">Token copiado com sucesso!</p>
-    <p>{{ psg_auth_token }}</p>
-  </div>
+  <header>
+  <nav>
+      <div class="nav-left">
+        <router-link :to="{ name: 'home' }" class="logo">Cardapio</router-link>
+        <router-link :to="{ name: 'categorias' }">Saiba mais </router-link>
+        <router-link :to="{ name: 'livros' }">Objetivos e beneficios </router-link>
+      </div>
+
+      <div class="nav-right" v-if="isLoggedIn">
+        <!-- Link para o perfil alinhado à esquerda -->
+        <router-link to="/usuario" class="profile-link">Perfil</router-link>
+
+        <!-- Foto do usuário com dropdown -->
+        <div class="user-menu" @click="toggleDropdown">
+          <img
+            v-if="user.foto && user.foto.url"
+            :src="user.foto.url"
+            alt="Foto do usuário"
+            class="user-photo-small"
+          />
+          <img
+            v-else
+            src="https://via.placeholder.com/50"
+            alt="Sem foto"
+            class="user-photo-small"
+          />
+
+          <div v-if="showDropdown" class="dropdown-menu">
+            <p><strong>{{ user.name }}</strong></p>
+            <p class="email">{{ user.email }}</p> <!-- Adiciona classe email -->
+            <router-link to="/logout" class="dropdown-item">Logout</router-link>
+         
+         
+          </div>
+        </div>
+      </div>
+
+      
+    </nav>
+  </header>
 </template>
 
+
+
 <style scoped>
-body {
-  font-family: 'Arial', sans-serif;
-  background-color: #f4f4f9;
-  margin: 0;
-  padding: 0;
-}
-
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* Alinha o conteúdo ao topo */
-  min-height: 100vh;
-  padding: 20px;
-}
-
-p {
-  font-size: 1rem;
-  color: #555;
-  text-align: center;
-  background-color: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 500px;
-  word-break: break-all;
-  margin: 10px auto; /* Ajustado o margin para 10px */
-}
-
-button {
-  display: block;
-  margin: 0 auto 20px; /* Removido o espaço extra acima do botão */
-  padding: 12px 25px;
+/* Estilos gerais da barra de navegação */
+.navbar {
   background-color: #343a40;
   color: #fff;
-  border: none;
-  border-radius: 5px;
-  font-size: 1rem;
+  padding: 15px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+}
+
+.nav-left a {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 20px;
+  font-weight: bold;
+}
+
+.logo {
+  font-size: 1.5rem;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+}
+
+.profile-link {
+  color: #fff;
+  text-decoration: none;
+  margin-right: 15px;
+  font-weight: bold;
+}
+
+.user-menu {
+  position: relative;
   cursor: pointer;
+}
+
+.user-photo-small {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #fff;
+  transition: border-color 0.3s;
+}
+
+.user-photo-small:hover {
+  border-color: #4a90e2;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  position: absolute;
+  top: 50px;
+  right: 0;
+  background-color: #fff;
+  color: #333;
+  padding: 10px;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+  z-index: 1000;
+  min-width: 200px; /* Define um tamanho mínimo para o dropdown */
+}
+
+.dropdown-menu p {
+  margin: 0;
+  padding: 5px 0;
+}
+
+.dropdown-item {
+  display: block;
+  color: #333;
+  text-decoration: none;
+  padding: 8px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.dropdown-item:hover {
+  background-color: #f4f4f4;
+}
+
+/* Estilo específico para o email */
+.email {
+  word-wrap: break-word; /* Garante que o e-mail quebre de forma adequada se for longo */
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 10px;
+}
+
+/* Estilos do botão de login */
+.login-btn {
+  background-color: #555;
+  padding: 10px 20px;
+  color: white;
+  border-radius: 5px;
+  text-decoration: none;
   transition: background-color 0.3s;
 }
 
-button:hover {
+.login-btn:hover {
   background-color: #000;
-  color: #fff;
 }
 
-.copy-message {
-  text-align: center;
-  color: #4CAF50;
-  margin-top: 10px;
-  font-weight: bold;
-  animation: fadeInOut 2s ease-in-out;
-}
-
-@keyframes fadeInOut {
-  0% { opacity: 0; }
-  10% { opacity: 1; }
-  90% { opacity: 1; }
-  100% { opacity: 0; }
-}
-
+/* Responsividade */
 @media (max-width: 600px) {
-  .container {
-    padding: 15px;
+  .navbar {
+    padding: 10px;
   }
 
-  p {
-    padding: 15px;
-    max-width: 90%;
+  .nav-left a {
+    margin-right: 10px;
+  }
+
+  .user-photo-small {
+    width: 35px;
+    height: 35px;
   }
 }
 </style>
+
+    
