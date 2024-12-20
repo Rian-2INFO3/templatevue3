@@ -22,8 +22,8 @@ const toggleDropdown = () => {
     <nav>
       <div class="nav-left">
         <router-link :to="{ name: 'home' }" class="logo">Cardapio</router-link>
-        <router-link :to="{ name: 'categorias' }">Saiba mais </router-link>
-        <router-link :to="{ name: 'livros' }">Objetivos e beneficios </router-link>
+        <router-link :to="{ name: 'categorias' }">Objetivos e beneficios </router-link>
+        <router-link :to="{ name: 'livros' }">Saiba Mais</router-link>
       </div>
       
 

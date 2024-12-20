@@ -1,179 +1,146 @@
-<script setup>
-import { ref, reactive, onMounted } from "vue";
-import CategoriasApi from "@/api/categorias";
-const categoriasApi = new CategoriasApi();
-
-const defaultCategoria = { id: null, descricao: "" };
-const categorias = ref([]);
-const categoria = reactive({ ...defaultCategoria });
-
-onMounted(async () => {
-  categorias.value = await categoriasApi.buscarTodasAsCategorias();
-});
-
-function limpar() {
-  Object.assign(categoria, { ...defaultCategoria });
-}
-
-async function salvar() {
-  if (categoria.id) {
-    await categoriasApi.atualizarCategoria(categoria);
-  } else {
-    await categoriasApi.adicionarCategoria(categoria);
-  }
-  categorias.value = await categoriasApi.buscarTodasAsCategorias();
-  limpar();
-}
-
-function editar(categoria_para_editar) {
-  Object.assign(categoria, categoria_para_editar);
-}
-
-async function excluir(id) {
-  await categoriasApi.excluirCategoria(id);
-  categorias.value = await categoriasApi.buscarTodasAsCategorias();
-  limpar();
-}
-</script>
-
 <template>
+  <div>
+    <header>
+      <div class="saiba">
+       
+      </div>
+      <h1>Benefícios da Comida na Escola</h1>
+    </header>
 
-  
-  <div class="container">
-    <h1>Categorias</h1>
-    <div class="form">
-      <input type="text" v-model="categoria.descricao" placeholder="Descrição" />
-      <button @click="salvar">Salvar</button>
-      <button @click="limpar">Limpar</button>
+    <div class="container">
+      <h2>Por que a comida escolar é importante?</h2>
+      <div class="benefit" v-for="(benefit, index) in benefits" :key="index">
+        <h3>{{ index + 1 }}. {{ benefit.title }}</h3>
+        <p>{{ benefit.description }}</p>
+      </div>
+      <button @click="toggleExtraInfo">{{ moreInfoButtonText }}</button>
+      <div class="extra-info" v-if="showExtraInfo">
+        <h3>Benefícios Adicionais:</h3>
+        <ul>
+          <li v-for="(extra, index) in extraBenefits" :key="index">{{ extra }}</li>
+        </ul>
+      </div>
     </div>
-    <ul class="categoria-list">
-      <li v-for="categoria in categorias" :key="categoria.id">
-        <span @click="editar(categoria)">
-          ({{ categoria.id }}) - {{ categoria.descricao }}
-        </span>
-        <button @click="excluir(categoria.id)">Excluir</button>
-      </li>
-    </ul>
   </div>
 </template>
 
+<script>
+export default {
+  data() {
+    return {
+      benefits: [
+        { title: "Melhora a Concentração", description: "A comida saudável fornece a energia necessária para que os alunos se mantenham concentrados durante as aulas." },
+        { title: "Estimula o Crescimento", description: "Uma alimentação balanceada é essencial para o crescimento e desenvolvimento adequado das crianças." },
+        { title: "Promove Hábitos Saudáveis", description: "A escola é um ótimo lugar para ensinar os alunos sobre a importância de uma alimentação saudável." },
+        { title: "Aumenta a Sociabilidade", description: "As refeições em grupo incentivam a interação social e ajudam a construir amizades." }
+      ],
+      extraBenefits: [
+        "Redução do estresse e da ansiedade.",
+        "Melhora na performance acadêmica.",
+        "Redução de doenças relacionadas à má alimentação."
+      ],
+      showExtraInfo: false
+    };
+  },
+  computed: {
+    moreInfoButtonText() {
+      return this.showExtraInfo ? "Ocultar informações adicionais" : "Saiba mais sobre os benefícios";
+    }
+  },
+  methods: {
+    toggleExtraInfo() {
+      this.showExtraInfo = !this.showExtraInfo;
+    }
+  }
+};
+</script>
+
 <style scoped>
 body {
-  font-family: "Arial", sans-serif;
-  background-color: #f4f4f9;
+  font-family: Arial, sans-serif;
   margin: 0;
   padding: 0;
+  background-color: #000000;
+  color: #333;
 }
-
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-}
-
-h1 {
-  font-size: 1.5rem;
-  color: #343a40;
-  margin-bottom: 30px;
+header {
+  background-color: #4CAF50;
+  color: white;
+  padding: 15px;
   text-align: center;
 }
-
-.form {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 30px;
+.container {
+  width: 90%;
+  max-width: 800px;
+  margin: 20px auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
-
-input[type="text"] {
-  padding: 12px;
-  font-size: 1rem;
+h2 {
+  color: #4CAF50;
+}
+.benefit {
+  margin: 15px 0;
+  padding: 10px;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  background-color: #e7f9e7;
+}
+button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+button:hover {
+  background-color: #45a049;
+}
+.extra-info {
+  margin-top: 10px;
+  padding: 10px;
+  background-color: #f9f9f9;
   border: 1px solid #ccc;
   border-radius: 5px;
-  width: 250px;
-  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-  transition: border-color 0.3s;
 }
-
-input[type="text"]:focus {
-  border-color: #343a40;
-  outline: none;
+img {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 15px;
 }
-
-button {
-  padding: 12px 25px;
-  font-size: 1rem;
-  background-color: #343a40;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
+.div {
+  text-align: center;
+  margin: 20px 0;
 }
-
-button:hover {
-  background-color: #000;
-}
-
-.categoria-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  width: 100%;
-  max-width: 500px;
-}
-
-li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #fff;
+.link-topo-esquerda, .inicio {
+  position: fixed;
+  top: 0;
   padding: 15px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
-}
-
-li span {
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-
-li span:hover {
-  color: #343a40;
-}
-
-li button {
-  padding: 8px 12px;
-  font-size: 0.9rem;
-  background-color: #e74c3c;
+  text-decoration: none;
   color: white;
-  border: none;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background-color 0.3s;
 }
-
-li button:hover {
-  background-color: #c0392b;
+.link-topo-esquerda {
+  left: 20px;
 }
-
+.inicio {
+  right: 20px;
+}
 @media (max-width: 600px) {
-  .form {
-    flex-direction: column;
-    gap: 10px;
+  header {
+    padding: 10px;
   }
-
-  input[type="text"] {
-    width: 100%;
+  .container {
+    width: 95%;
+    padding: 15px;
   }
-
-  ul {
-    padding: 0;
+  .link-topo-esquerda, .inicio {
+    padding: 10px;
   }
 }
 </style>
