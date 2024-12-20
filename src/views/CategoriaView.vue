@@ -37,6 +37,8 @@ async function excluir(id) {
 </script>
 
 <template>
+
+  
   <div class="container">
     <h1>Categorias</h1>
     <div class="form">

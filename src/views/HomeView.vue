@@ -1,11 +1,7 @@
 <template>
   <header>
   <nav>
-      <div class="nav-left">
-        <router-link :to="{ name: 'home' }" class="logo">Cardapio</router-link>
-        <router-link :to="{ name: 'categorias' }">Saiba mais </router-link>
-        <router-link :to="{ name: 'livros' }">Objetivos e beneficios </router-link>
-      </div>
+      
 
       <div class="nav-right" v-if="isLoggedIn">
         <!-- Link para o perfil alinhado à esquerda -->
@@ -36,18 +32,110 @@
         </div>
       </div>
 
+
+      <table class="menu-table">
+      <thead>
+        <tr>
+          <th>Dia</th>
+          <th>Prato Principal</th>
+          <th>Acompanhamentos</th>
+          <th>Sobremesa</th>
+          <th>Sem Glúten</th>
+          <th>Vegetariano</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(item, index) in filteredMenu" :key="index">
+          <td>{{ item.dia }}</td>
+          <td>{{ item.prato }}</td>
+          <td>{{ item.acompanhamentos }}</td>
+          <td>{{ item.sobremesa }}</td>
+          <td>{{ item.semGluten ? 'Sim' : 'Não' }}</td>
+          <td>{{ item.vegetariano ? 'Sim' : 'Não' }}</td>
+        </tr>
+      </tbody>
+    </table>
+
       
     </nav>
   </header>
 </template>
+
+<script>
+export default {
+  data() {
+    return {
+      filters: {
+        semGluten: false,
+        vegetariano: false,
+      },
+      menu: [
+        {
+          dia: 'Segunda-feira',
+          prato: 'Frango Assado',
+          acompanhamentos: 'Arroz, Feijão, Salada',
+          sobremesa: 'Fruta',
+          semGluten: true,
+          vegetariano: false,
+        },
+        {
+          dia: 'Terça-feira',
+          prato: 'Iscas de Frango empanado',
+          acompanhamentos: 'Arroz, Feijão, Alface',
+sobremesa: 'Banana',
+semGluten: true,
+vegetariano: false,
+
+        },
+        {
+          dia: 'Quarta-feira',
+          prato: 'Peixe Grelhado',
+          acompanhamentos: 'Arroz Integral, Legumes',
+          sobremesa: 'Gelatina',
+          semGluten: true,
+          vegetariano: false,
+        },
+        {
+          dia: 'Quinta-feira',
+          prato: 'Carne de Panela',
+          acompanhamentos: 'Purê de Batata, Salada',
+          sobremesa: 'Sorvete',
+          semGluten: true,
+          vegetariano: false,
+        },
+        {
+          dia: 'Sexta-feira',
+          prato: 'Pizza Vegetariana',
+          acompanhamentos: 'Salada Completa',
+          sobremesa: 'Bolo',
+          semGluten: false,
+          vegetariano: true,
+        },
+      ],
+    }
+  },
+  computed: {
+    filteredMenu() {
+      return this.menu.filter(item => {
+        return (
+          (!this.filters.semGluten || item.semGluten) &&
+          (!this.filters.vegetariano || item.vegetariano)
+        )
+      })
+    },
+  },
+}
+</script>
+
+
 
 
 
 <style scoped>
 /* Estilos gerais da barra de navegação */
 .navbar {
-  background-color: #343a40;
-  color: #fff;
+  background-color: #16c510;
+  color: #00ff00;
   padding: 15px 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
@@ -64,7 +152,7 @@ nav {
 }
 
 .nav-left a {
-  color: #fff;
+  color: #12f812;
   text-decoration: none;
   margin-right: 20px;
   font-weight: bold;
@@ -172,6 +260,78 @@ nav {
   .user-photo-small {
     width: 35px;
     height: 35px;
+  }
+}
+
+/* * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f4f4f4;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+} */
+
+.logo {
+  display: flex;
+  align-items: center;
+}
+
+.container {
+  width: 100%;
+  background-color: #fff;
+  padding: 200px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+h1 {
+  font-size: 32px;
+  margin-bottom: 35px;
+  color: #333;
+}
+
+.filters {
+  margin-bottom: 15px;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.filters label {
+  font-size: 16px;
+  color: #333;
+}
+
+.menu-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.menu-table th,
+.menu-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+}
+
+.menu-table th {
+  background-color: #4caf50;
+  color: white;
+}
+
+@media (max-width: 600px) {
+
+  .menu-table th,
+  .menu-table td {
+    padding: 8px;
+    font-size: 14px;
   }
 }
 </style>

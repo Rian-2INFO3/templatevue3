@@ -25,6 +25,7 @@ const toggleDropdown = () => {
         <router-link :to="{ name: 'categorias' }">Saiba mais </router-link>
         <router-link :to="{ name: 'livros' }">Objetivos e beneficios </router-link>
       </div>
+      
 
       <div class="nav-right" v-if="isLoggedIn">
         <!-- Link para o perfil alinhado à esquerda -->
